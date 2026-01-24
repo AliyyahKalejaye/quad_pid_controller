@@ -1,5 +1,5 @@
 # quad_pid_controller
-This repo contains the code for a quadcopter drone controller tuned with multiple PIDs. 
+This repo contains the code for a quadcopter drone controller tuned with multiple PIDs in Webots. 
 
 It is written in Python.
 
