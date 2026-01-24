@@ -1,3 +1,28 @@
+# Quadcopter PID controller for Webots.
+# This file implements a reusable, joystick-driven PID control system
+# designed specifically for safe PID tuning and control experimentation
+# on a simulated quadcopter.
+#
+# The controller integrates:
+# - Manual joystick input (pygame)
+# - Independent PID loops for roll, pitch, yaw, and altitude
+# - Real-time telemetry visualization using matplotlib
+
+
+# Import Webots Robot base class and core Python utilities.
+# These imports support real-time control, math operations,
+# threading, inter-thread communication, and timing.
+#
+# Third-party libraries:
+# - matplotlib: real-time telemetry plotting
+# - numpy: numerical support
+# - pygame: joystick/gamepad input handling
+#
+# Environment configuration hides pygame startup messages
+# and suppresses matplotlib warnings caused by GUI usage
+# in a background thread.
+
+
 from controller import Robot
 import sys
 import math
@@ -11,6 +36,12 @@ import pygame
 import os
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 
+
+# Suppress specific matplotlib warnings related to GUI usage
+# outside the main thread. This is intentional because plotting
+# is handled in a dedicated background thread to avoid blocking
+# the Webots control loop.
+
 import warnings
 # Suppress only matplotlib warnings
 warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
@@ -18,11 +49,29 @@ warnings.filterwarnings('ignore', category=UserWarning, module='matplotlib')
 # Or suppress specific warning messages
 warnings.filterwarnings('ignore', message='Starting a Matplotlib GUI outside of the main thread')
 
+
+# Clamp helper function.
+# Ensures values stay within specified bounds.
+# Used throughout PID control to prevent:
+# - Integrator windup
+# - Unsafe or unstable motor commands
+
 def clamp(value, value_min, value_max):
     return min(max(value, value_min), value_max)
 
 
-
+# ThreadedDataPlotter:
+# A non-blocking, thread-safe real-time plotting system.
+#
+# This class runs matplotlib in a dedicated daemon thread
+# so telemetry visualization does NOT interfere with:
+# - Webots simulation timing
+# - Control loop stability
+#
+# It visualizes:
+# - Roll, pitch, yaw angles
+# - Altitude
+# - PID control outputs
 
 class ThreadedDataPlotter:
     def __init__(self, max_points=50, update_interval=5):
@@ -149,8 +198,23 @@ class ThreadedDataPlotter:
 
 
 
+# PIDController:
+# Encapsulates a single PID control loop.
+#
+# Features:
+# - Independent P, I, and D gains
+# - Output clamping for safety
+# - Integral clamping to prevent windup
+# - Proper derivative initialization handling
 
 
+# Compute PID output given an error and timestep (dt).
+#
+# P-term: immediate proportional response
+# I-term: accumulated error over time (clamped)
+# D-term: error rate of change (disabled on first update)
+#
+# Final output is clamped to safe limits before returning.
 
 class PIDController:
     def __init__(self, kp, ki, kd, min_output=-10, max_output=10):
@@ -183,10 +247,30 @@ class PIDController:
         return output
     
 
+# Mavic:
+# Main quadcopter controller class.
+# Inherits from Webots Robot and implements:
+# - Sensor initialization
+# - Motor control
+# - Joystick handling
+# - PID-based flight stabilization
+# - Telemetry visualization
 
 class Mavic(Robot):
-    K_VERTICAL_THRUST = 70.0
-    K_VERTICAL_OFFSET = 0.6
+    K_VERTICAL_THRUST = 70.0  # Vertical thrust constants used as the baseline.
+    K_VERTICAL_OFFSET = 0.6   # for hover and altitude control
+
+
+    # Controller initialization.
+    #
+    # Responsibilities:
+    # - Configure simulation timestep
+    # - Initialize pygame and detect joystick
+    # - Define control limits (tilt, yaw rate, vertical speed)
+    # - Enable IMU, GPS, and gyro sensors
+    # - Configure motors for velocity control
+    # - Initialize PID controllers
+    # - Start telemetry plotting thread
 
     def __init__(self):
         Robot.__init__(self)
@@ -208,10 +292,7 @@ class Mavic(Robot):
         self.max_tilt = 10.0  # Maximum tilt angle in degrees
         self.max_vertical_speed = 1.1  # Maximum vertical speed in m/s
         self.max_yaw_rate = 90.0  # Maximum yaw rate in degrees/s
-
-        
-        
-
+              
         # Initialize sensors
         self.imu = self.getDevice("inertial unit")
         self.imu.enable(self.time_step)
@@ -253,8 +334,7 @@ class Mavic(Robot):
 
         #optimized gains
 
-        self.roll_pid =     PIDController(kp=0.215, ki=0.197, kd=0.095)
-        #self.roll_pid =     PIDController(kp=2.9, ki=1.5, kd=0.0976)
+        self.roll_pid =     PIDController(kp=0.215, ki=0.197, kd=0.095)       
         self.pitch_pid =    PIDController(kp=0.21, ki=0.2, kd=0.09)     
         self.yaw_pid =      PIDController(kp=0.1298, ki=0.015, kd=0.09)
         self.altitude_pid = PIDController(kp=10.0, ki=0.01, kd=5)
@@ -271,7 +351,16 @@ class Mavic(Robot):
         # Initialize plotter
         self.plotter = ThreadedDataPlotter(max_points=200, update_interval=20)
 
-    
+    # Read and process joystick input.
+    #
+    # Features:
+    # - Axis mapping for roll, pitch, yaw, and altitude
+    # - Deadbands to suppress noise and drift
+    # - Incremental yaw heading control
+    # - Incremental altitude target adjustment with bounds
+    #
+    # Returns normalized control commands for PID targets.
+
     def get_joystick_input(self):
         """Get normalized joystick inputs between -1 and 1"""
         if not self.joystick:
@@ -328,6 +417,7 @@ class Mavic(Robot):
         """Apply deadband to a value. Returns 0 if value is within ±deadband."""
         return 0 if abs(value) < deadband else value
 
+
     def run(self):
         try:
             while self.step(self.time_step) != -1:
@@ -356,12 +446,7 @@ class Mavic(Robot):
                   
                     self.target_altitude = max(0.1, self.target_altitude)  # Keep minimum altitude
                 else:
-                    self.altitude_hold = True
-
-
-
-                
-             
+                    self.altitude_hold = True    
 
                 print(f"xtr => Roll: {target_roll:.2f}, Pitch: {target_pitch:.2f}, Yaw: {target_yaw_rate:.2f}, Altitude: {self.target_altitude:.2f}")
                
@@ -397,9 +482,6 @@ class Mavic(Robot):
                 # pitchGains = self.adaptiveControl.compute_control_signal(pitch_error)
 
                 # print(pitchGains, "---- >")
-
-
-
 
                 # Compute PID outputs
                 roll_input = self.roll_pid.compute(roll_error, dt)
@@ -440,7 +522,8 @@ class Mavic(Robot):
         finally:
             self.plotter.close()
 
+
 # Main execution
 if __name__ == "__main__":
-    robot = Mavic()
-    robot.run()
+    robot = Mavic()  # Instantiates the Mavic controller and starts
+    robot.run()      # the main control loop
