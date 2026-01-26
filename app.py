@@ -161,6 +161,32 @@ st.markdown("""
 - **Ki**: Eliminates steady-state error, too high → windup
 - **Kd**: Dampens oscillations, sensitive to noise
 
+
+st.markdown(
+    """
+    <style>
+        .footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #0e1117;
+            color: #fafafa;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9rem;
+            z-index: 100;
+        }
+    </style>
+
+    <div class="footer">
+        Built by <strong>Aliyyah Kalejaye</strong>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
 💡 Use the **error plot** to judge tuning quality.
 """)
 
