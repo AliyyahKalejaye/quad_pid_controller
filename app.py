@@ -18,7 +18,7 @@ st.write("Interactive tuning of an existing PID controller")
 # SAFE IMPORT OF PID CONTROLLER
 # ==============================
 try:
-    from droneControl import PID
+    from pid_core import PID
 except Exception as e:
     st.error("❌ Failed to import PID controller from `droneControl.py`")
     st.code(traceback.format_exc())
