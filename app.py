@@ -160,7 +160,8 @@ st.markdown("""
 - **Kp**: Increases responsiveness, too high → oscillations
 - **Ki**: Eliminates steady-state error, too high → windup
 - **Kd**: Dampens oscillations, sensitive to noise
-
+💡 Use the **error plot** to judge tuning quality.
+""")
 
 st.markdown(
     """
@@ -185,9 +186,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-💡 Use the **error plot** to judge tuning quality.
-""")
-
-
