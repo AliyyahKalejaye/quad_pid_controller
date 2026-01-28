@@ -16,12 +16,7 @@ col_logo, _ = st.columns([1, 7])
 with col_logo:
     st.markdown(
         """
-        <style>
-             /* Kill extra spacing Streamlit adds */
-            .logo-wrapper {
-                margin-bottom: -12px;
-            }
-            
+        <style> 
             /* Hide both by default */
             .logo-dark, .logo-light {
                 display: none;
@@ -42,7 +37,7 @@ with col_logo:
             .logo-container {
                 display: flex;
                 align-items: center;
-                margin-bottom: 1rem;
+                margin-bottom: 0.5rem;
             }
         </style>
     
