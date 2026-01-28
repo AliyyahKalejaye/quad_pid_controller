@@ -37,7 +37,7 @@ with col_logo:
             .logo-container {
                 display: flex;
                 align-items: center;
-                margin-bottom: 0.5rem;
+                margin-bottom: 0.25rem;
             }
         </style>
     
