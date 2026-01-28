@@ -17,10 +17,15 @@ with col_logo:
     st.markdown(
         """
         <style>
+             /* Kill extra spacing Streamlit adds */
+            .logo-wrapper {
+                margin-bottom: -12px;
+            }
+            
             /* Hide both by default */
             .logo-dark, .logo-light {
                 display: none;
-                height: 72px;
+                height: 64px;
                 width: auto;
             }
     
