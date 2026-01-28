@@ -14,27 +14,37 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-        @media (prefers-color-scheme: dark) {
-            .logo-light { display: block; }
-            .logo-dark { display: none; }
+        /* Hide both by default */
+        .logo-dark, .logo-light {
+            display: none;
+            height: 64px;
+            width: auto;
         }
 
-        @media (prefers-color-scheme: light) {
-            .logo-light { display: none; }
-            .logo-dark { display: block; }
+        /* Light mode */
+        html:not([data-theme="dark"]) .logo-dark {
+            display: block;
+        }
+
+        /* Dark mode */
+        html[data-theme="dark"] .logo-light {
+            display: block;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
         }
     </style>
 
-    <div style="display: flex; align-items: center;">
-        <a href="https://github.com/AliyyahKalejaye" target="_blank">
-            <img class="PF_Air_Logo black"
-                 src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo black.png"
-                 style="width:60px;">
-            <img class="PF_Air_Logo white.png"
-                 src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo white.png.jpeg"
-                 style="width:60px;">
-        </a>
-        <h2 style="margin-left: 15px;">PID Controller</h2>
+    <div class="logo-container">
+        <img class="logo-dark"
+             src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo black.png"
+             alt="Logo">
+        <img class="logo-light"
+             src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo white.png.jpeg"
+             alt="Logo">
     </div>
     """,
     unsafe_allow_html=True
