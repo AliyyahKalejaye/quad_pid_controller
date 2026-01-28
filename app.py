@@ -11,44 +11,47 @@ st.set_page_config(
     layout="wide"
 )
 
-st.markdown(
-    """
-    <style>
-        /* Hide both by default */
-        .logo-dark, .logo-light {
-            display: none;
-            height: 64px;
-            width: auto;
-        }
+col_logo, _ = st.columns([1, 7])
 
-        /* Light mode */
-        html:not([data-theme="dark"]) .logo-dark {
-            display: block;
-        }
-
-        /* Dark mode */
-        html[data-theme="dark"] .logo-light {
-            display: block;
-        }
-
-        .logo-container {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-    </style>
-
-    <div class="logo-container">
-        <img class="logo-dark"
-             src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo black.png"
-             alt="Logo">
-        <img class="logo-light"
-             src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo white.png.jpeg"
-             alt="Logo">
-    </div>
-    """,
-    unsafe_allow_html=True
-)
+with col_logo:
+    st.markdown(
+        """
+        <style>
+            /* Hide both by default */
+            .logo-dark, .logo-light {
+                display: none;
+                height: 64px;
+                width: auto;
+            }
+    
+            /* Light mode */
+            html:not([data-theme="dark"]) .logo-dark {
+                display: block;
+            }
+    
+            /* Dark mode */
+            html[data-theme="dark"] .logo-light {
+                display: block;
+            }
+    
+            .logo-container {
+                display: flex;
+                align-items: center;
+                margin-bottom: 1rem;
+            }
+        </style>
+    
+        <div class="logo-container">
+            <img class="logo-dark"
+                 src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo black.png"
+                 alt="Logo">
+            <img class="logo-light"
+                 src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo white.png.jpeg"
+                 alt="Logo">
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 
 
 st.title("PID Controller")
