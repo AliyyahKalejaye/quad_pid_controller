@@ -11,8 +11,38 @@ st.set_page_config(
     layout="wide"
 )
 
+st.markdown(
+    """
+    <style>
+        @media (prefers-color-scheme: dark) {
+            .logo-light { display: block; }
+            .logo-dark { display: none; }
+        }
+
+        @media (prefers-color-scheme: light) {
+            .logo-light { display: none; }
+            .logo-dark { display: block; }
+        }
+    </style>
+
+    <div style="display: flex; align-items: center;">
+        <a href="https://github.com/AliyyahKalejaye" target="_blank">
+            <img class="PF_Air_Logo black"
+                 src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo black.png"
+                 style="width:60px;">
+            <img class="PF_Air_Logo white.png"
+                 src="https://raw.githubusercontent.com/AliyyahKalejaye/quad_pid_controller/main/PF_Air_Logo white.png.jpeg"
+                 style="width:60px;">
+        </a>
+        <h2 style="margin-left: 15px;">PID Controller</h2>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
+
+
 st.title("PID Controller")
-st.write("Interactive tuning of an existing PID controller")
+st.write("Interactive tuning of a PID controller")
 
 # ==============================
 # SAFE IMPORT OF PID CONTROLLER
