@@ -20,7 +20,7 @@ with col_logo:
             /* Hide both by default */
             .logo-dark, .logo-light {
                 display: none;
-                height: 64px;
+                height: 72px;
                 width: auto;
             }
     
